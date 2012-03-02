@@ -1,0 +1,74 @@
+library IEEE;
+use IEEE.std_logic_1164.ALL;
+use IEEE.std_logic_ARITH.ALL;
+use IEEE.std_logic_unsigned.ALL;
+
+entity full_adder is
+  port(
+        ifa_A   : in std_logic;
+        ifa_B   : in std_logic;
+        ifa_Cin : in std_logic;
+        ofa_Cout: out std_logic;
+        ofa_S   : out std_logic
+        );
+end full_adder;
+
+architecture structure of full_adder is
+  component and2
+    port(
+      i_A  : in std_logic;
+      i_B  : in std_logic;
+      o_F  : out std_logic
+      
+      );
+  end component;    
+  
+  component or2
+    port(
+      i_A  : in std_logic;
+      i_B  : in std_logic;
+      o_F  : out std_logic
+      );
+  end component;
+  
+  component xor2
+    port(
+      i_A   : in std_logic;
+      i_B   : in std_logic;
+      o_F   : out std_logic
+      );
+  end component;
+  
+  signal sAND_AB  : std_logic;
+  signal sXOR_AB  : std_logic;
+  signal sAND_Cin : std_logic;
+  
+  begin
+    
+    xor_AB: xor2
+      port MAP(
+            i_A => ifa_A,
+            i_B => ifa_B,
+            o_F => sXOR_AB );
+    and_AB: and2
+      port MAP(
+            i_A => ifa_A,
+            i_B => ifa_B,
+            o_F => sAND_AB );
+    and_Cin: and2
+      port MAP(
+            i_A => sXOR_AB,
+            i_B => ifa_Cin,
+            o_F => sAND_Cin );
+    or_Cout: or2
+      port MAP(
+            i_A => sAND_AB,
+            i_B => sAND_Cin,
+            o_F => ofa_Cout );
+    xor_S: xor2
+      port MAP(
+            i_A => sXOR_AB,
+            i_B => ifa_Cin,
+            o_F => ofa_S );
+            
+end structure;
