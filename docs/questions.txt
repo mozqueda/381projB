@@ -1,0 +1,10 @@
+Single Cycle Processor Questions
+
+- BGEZ, BGEZAL, BGTZ, BLEZ, BLTZ, BLTZAL, different from BEQ and BNE because they do not need the ALU.  In our implementation, we have a Branch Helper that takes the ALU result.  
+
+- what is the difference between LB and LBU? 
+
+- How is MUL implemented in a Single Cycle Processor?
+
+- Instruction Fetch Logic involves fetching the next instruction from memory.  Will we use a separate mem.vhd component for the instruction memory?  
+
