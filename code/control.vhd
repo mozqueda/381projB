@@ -8,8 +8,8 @@ use IEEE.numeric_std.ALL;
 -- John Ryan and Juan Mozqueda
 
 entity control is
-  port(
-    );
+  --port(
+  --  );
 end control;
 
 architecture structure of control is
@@ -31,5 +31,5 @@ architecture structure of control is
 ---------------
 -- Structure --
 ---------------
-
+begin
 end structure;
