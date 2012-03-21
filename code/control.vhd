@@ -71,14 +71,8 @@ begin
   logic_arith_shift <= sHelper(1);
   slt_unsigned <= sHelper(0);
   
-  
-  -- Currently, this does not work because ALU operations like add require
-  -- the testing of the opcode and the function code to determine which
-  -- instruction to perform.
-  with instruction(5 downto 0) select
-    sHelper <= "1010100U0UUU0010UUUUU00UU0UU0" when "000000",
-               "00000000000000000000000000000" when others;
-  end if;
-  
-  
+
+  sHelper <= "1010100-0---0010-----00--0--0" when opcode = "000000" AND funct_code="100000" else
+             "1011100-0---0000-----00--0--0" when opcode = "001000" else
+             "00000000000000000000000000000";
 end structure;
