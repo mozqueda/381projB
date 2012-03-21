@@ -1,10 +1,38 @@
 Single Cycle Processor Questions
 
-- BGEZ, BGEZAL, BGTZ, BLEZ, BLTZ, BLTZAL, different from BEQ and BNE because they do not need the ALU.  In our implementation, we have a Branch Helper that takes the ALU result.  
+- BGEZ, BGEZAL, BGTZ, BLEZ, BLTZ, BLTZAL, different from BEQ and BNE because they do not need the ALU.  In our implementation, we have a Branch Helper that takes the ALU result, as well as the B input to the ALU.  Is this necessary?  Should the ALU have a short from the B input to the ALU output?
 
 - what is the difference between LB and LBU? 
 
-- How is MUL implemented in a Single Cycle Processor?
+- How is MUL implemented in a Single Cycle Processor?  Should it support signed and unsigned values?  Or just unsigned values?
 
-- Instruction Fetch Logic involves fetching the next instruction from memory.  Will we use a separate mem.vhd component for the instruction memory?  
+- Instruction Fetch Logic involves fetching the next instruction from memory.  Will we use a separate mem.vhd component for the instruction memory? 
+	No I think.
 
+- are the rs and rt labeled correctly on my diagram?
+
+- do I have the right idea with the link helper module?
+
+- What do we do with the Overflow Trap signal?
+
+- Does the ALU need to do anything for BGEZ or BGTZ?  Does it need to subtract for BEQ?
+
+- Do you have your example for the control module you shared in class?  Did you use a with select or case select?  how did you combine your signals to make the code easier to read and write?
+
+- how/can/should we specify 'dont cares' in our control module signals?
+
+Our signals:
+	ALUOp
+	MemWrite
+	ALUSrc
+	RegWrite
+	MemToReg
+	Branch
+	Jump
+	RegDst (rt or rd goes to waddr)
+	Overflow Trap?
+	AndLink
+	Storetype
+	Loadtype
+	load_sign_en
+	UseResultForBranch???

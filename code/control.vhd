@@ -8,28 +8,39 @@ use IEEE.numeric_std.ALL;
 -- John Ryan and Juan Mozqueda
 
 entity control is
-  --port(
-  --  );
+  port( instruction : in std_logic_vector(31 downto 0);
+        alu_op : out std_logic_vector(2 downto 0);
+        alu_src : out std_logic;
+        reg_write : out std_logic;
+        mem_write : out std_logic;
+        mem_to_reg : out std_logic;
+        mem_read : out std_logic;
+        branch : out std_logic;
+        branch_condition : out std_logic_vector(2 downto 0);
+        jump : out std_logic;
+        jump_reg_en : out std_logic;
+        reg_dst : out std_logic;
+        and_link : out std_logic;
+        store_type : out std_logic_vector(1 downto 0);
+        load_type : out std_logic_vector(1 downto 0);
+        load_sign_en : out std_logic;
+        alu_shift_mul_sel : out std_logic_vector(1 downto 0);
+        shift_source : out std_logic_vector(1 downto 0);
+        overflow_trap : out std_logic;
+        left_right_shift : out std_logic;
+        logic_arith_shift : out std_logic;
+        slt_unsigned : out std_logic
+    );
 end control;
 
 architecture structure of control is
-----------------
--- Components --
-----------------
-  component alu_32bit
-    port( ian_op_sel : in std_logic_vector(2 downto 0);
-          ian_A : in std_logic_vector(31 downto 0);
-          ian_B : in std_logic_vector(31 downto 0);
-          oan_result : out std_logic_vector(31 downto 0);
-          oan_overflow : out std_logic );
-  end component;
-
 -------------
 -- Signals --
 -------------
-
+signal sHelper : std_logic_vector(28 downto 0);
 ---------------
 -- Structure --
 ---------------
 begin
+  alu_op <= sHelper(2 downto 0);
 end structure;
