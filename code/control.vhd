@@ -38,9 +38,47 @@ architecture structure of control is
 -- Signals --
 -------------
 signal sHelper : std_logic_vector(28 downto 0);
+signal opcode : std_logic_vector(5 downto 0);
+signal funct_code : std_logic_vector(5 downto 0);
+
 ---------------
 -- Structure --
 ---------------
 begin
-  alu_op <= sHelper(2 downto 0);
+  
+  opcode <= instruction(31 downto 26);
+  funct_code <= instruction(5 downto 0);
+  
+  alu_op <= sHelper(28 downto 26);
+  alu_src <= sHelper(25);
+  reg_write <= sHelper(24);
+  mem_write <= sHelper(23);
+  mem_to_reg <= sHelper(22);
+  mem_read <= sHelper(21);
+  branch <= sHelper(20);
+  branch_condition <= sHelper(19 downto 17);
+  jump <= sHelper(16);
+  jump_reg_en <= sHelper(15);
+  reg_dst <= sHelper(14);
+  and_link <= sHelper(13);
+  store_type <= sHelper(12 downto 11);
+  load_type <= sHelper(10 downto 9);
+  load_sign_en <= sHelper(8);
+  alu_shift_mul_sel <=sHelper(7 downto 6);
+  shift_source <= sHelper(5 downto 4);
+  overflow_trap <= sHelper(3);
+  left_right_shift <= sHelper(2);
+  logic_arith_shift <= sHelper(1);
+  slt_unsigned <= sHelper(0);
+  
+  
+  -- Currently, this does not work because ALU operations like add require
+  -- the testing of the opcode and the function code to determine which
+  -- instruction to perform.
+  with instruction(5 downto 0) select
+    sHelper <= "1010100U0UUU0010UUUUU00UU0UU0" when "000000",
+               "00000000000000000000000000000" when others;
+  end if;
+  
+  
 end structure;
