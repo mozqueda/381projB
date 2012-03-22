@@ -7,6 +7,8 @@ entity fetch_logic is
        i_jump_register      : in std_logic;
        i_branch_ctrl_rslt   : in std_logic;
        i_jump_ctrl          : in std_logic;
+       i_reset              : in std_logic;
+       i_CLK                : in std_logic;
        o_link_helper        : out std_logic_vector(31 downto 0));
 end fetch_logic;
 
