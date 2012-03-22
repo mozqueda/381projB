@@ -49,7 +49,7 @@ architecture structure of fetch_logic is
   
   component mem
       generic(depth_exp_of_2 	: integer;
-            mif_filename: string := "imem.mif");
+            mif_filename: string);
     port(address :  in std_logic_vector;
          byteena :  in std_logic_vector;
          clock   :  in std_logic;
@@ -60,16 +60,59 @@ architecture structure of fetch_logic is
   
   -- Declare Signals --
   
+  signal s_PC_out, s_instruction, s_PC_ALU_out, s_jump, s_imm_shift, s_jumpRegiser_rslt :  std_logic_vector(31 downto 0);
+  signal s_PC_ALU_ovfl : std_logic;
+ 
+  
   
   -- End of signal declaration --
     
   begin
     PC: reg
-      port map(ireg_CLK =>  ,
-               ireg_RST =>  ,
-               ireg_WE  =>  ,
+      port map(ireg_CLK =>  i_CLK,
+               ireg_RST =>  i_reset,
+               ireg_WE  =>  '1',
                ireg_D   =>  ,
-               oreg_Q   =>  );
+               oreg_Q   =>  s_PC_out);
+               
+    PC_ALU: alu_32bit
+      port map(ian_op_sel => "101",
+               ian_A      => s_PC_out,
+               ian_B      => s_PC_out,
+               oan_result => s_PC_ALU_out,          
+               oan_overflow => s_PC_ALU_ovfl);
+               
+    inst_mem: mem
+    generic map(depth_exp_of_2 => 10,
+              mif_filename => "imem.mif")  
+    port map(address => s_PC_out,
+             byteena => x"F",
+             clock   => '0',
+             data    => x"00000000",
+             wren    => '0',
+             q       => s_instruction);               
+    
+    s_jump <= s_PC_ALU_out(31 downto 28) & s_instruction(25 downto 0) & "00"; 
+    
+    
+    immshifter: barrel_shifter
+      port map(i_input        => i_imm,
+               i_shiftAmount  => "10",
+               i_control_L_R  => '1',
+               i_logical_arth => '0',
+               o_F            => s_imm_shift);
+               
+    mux1: mux_nbit
+      port map(imux_SW => i_jump_register,
+               imux_A  => s_imm_shift,
+               imux_B  => i_rs_data,
+               omux_E  =>            
+    
+    ALU2: alu_32bit
+      port map(ian_op_sel => "101",
+               ian_A      => s_PC_ALU_out,
+               ian_B      => 
+    
     
 end structure;
   
