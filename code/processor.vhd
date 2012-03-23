@@ -3,9 +3,8 @@ library ieee ;
     use ieee.numeric_std.all ;
 
 entity processor is
-  port (
-    
-  ) ;
+  port (  p_CLK : in std_logic;
+          reset : in std_logic ) ;
 end entity ; -- processor
 
 architecture structure of processor is
@@ -109,10 +108,40 @@ architecture structure of processor is
          i_B  : in std_logic_vector(31 downto 0);
          o_Result : out std_logic_vector(31 downto 0));
   end component;
+  
+  component load_helper
+      port( load_type : in std_logic_vector(1 downto 0);
+            is_signed : std_logic;
+            alu_out   : in std_logic_vector(31 downto 0);
+            mem_out   : in std_logic_vector(31 downto 0);
+            o_load_out   : out std_logic_vector(31 downto 0) );
+  end component;
+  
+  component store_helper
+    port( byte_addr   : in std_logic_vector(31 downto 0);
+          wdata_in    : in std_logic_vector(31 downto 0);
+          store_type  : in std_logic_vector(1 downto 0);
+          word_address: out std_logic_vector(9 downto 0);
+          byteena     : out std_logic_vector(3 downto 0);
+          wdata       : out std_logic_vector(31 downto 0) );
+  end component;
+  
+  
 -- ===========
 -- = Signals =
 -- ===========
-  
+signal s_rs : std_logic_vector(31 downto 0);
+signal s_rt : std_logic_vector(31 downto 0);
+signal s_rd : std_logic_vector(31 downto 0);
+
+signal s_reg_waddr_prelink : std_logic_vector(31 downto 0);
+signal s_reg_waddr_postlink : std_logic_vector(31 downto 0);
+
+
+-- =============
+-- = Structure =
+-- =============
+
 begin
   control: control
     port MAP( instruction => 
@@ -156,7 +185,7 @@ begin
                 oan_result => 
                 oan_overflow => );
   
-  -- LOAD AND STORE HELPERS NEEDED IN PROJECT
+  
   
   mem_unit : mem
     generic MAP ( depth_exp_of_2 => 10,
