@@ -1,11 +1,17 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
+--------------------------------
+-- Upper Section of processor --
+--------------------------------
+-- By Juan Mozqueda and John Ryan --
+
+
 entity fetch_logic is
   port(i_imm                : in std_logic_vector(31 downto 0);
        i_rs_data            : in std_logic_vector(31 downto 0);
-       i_jump_register      : in std_logic;
-       i_branch_ctrl_rslt   : in std_logic;
+       i_jumpRegister_ctrl  : in std_logic;
+       i_branchHelper_ctrl  : in std_logic;
        i_jump_ctrl          : in std_logic;
        i_reset              : in std_logic;
        i_CLK                : in std_logic;
@@ -60,8 +66,9 @@ architecture structure of fetch_logic is
   
   -- Declare Signals --
   
-  signal s_PC_out, s_instruction, s_PC_ALU_out, s_jump, s_imm_shift, s_jumpRegiser_rslt :  std_logic_vector(31 downto 0);
-  signal s_PC_ALU_ovfl : std_logic;
+  signal s_PC_out, s_instruction, s_PC_ALU_out, s_jump, s_imm_shift, s_jumpRegister_rslt, s_jump_rslt :  std_logic_vector(31 downto 0);
+  signal s_ALU2_rslt, s_branchHelper_rslt : std_logic_vector(31 downto 0);
+  signal s_PC_ALU_ovfl, s_ALU2_ovfl : std_logic;
  
   
   
@@ -72,13 +79,13 @@ architecture structure of fetch_logic is
       port map(ireg_CLK =>  i_CLK,
                ireg_RST =>  i_reset,
                ireg_WE  =>  '1',
-               ireg_D   =>  ,
+               ireg_D   =>  s_jump,
                oreg_Q   =>  s_PC_out);
                
     PC_ALU: alu_32bit
       port map(ian_op_sel => "101",
                ian_A      => s_PC_out,
-               ian_B      => s_PC_out,
+               ian_B      => x"00000100",
                oan_result => s_PC_ALU_out,          
                oan_overflow => s_PC_ALU_ovfl);
                
@@ -97,22 +104,34 @@ architecture structure of fetch_logic is
     
     immshifter: barrel_shifter
       port map(i_input        => i_imm,
-               i_shiftAmount  => "10",
+               i_shiftAmount  => "00010",
                i_control_L_R  => '1',
                i_logical_arth => '0',
                o_F            => s_imm_shift);
                
-    mux1: mux_nbit
-      port map(imux_SW => i_jump_register,
-               imux_A  => s_imm_shift,
-               imux_B  => i_rs_data,
-               omux_E  =>            
     
+    with i_jumpRegister_ctrl select
+      s_jumpRegister_rslt <= s_imm_shift when '0',
+                             i_rs_data when others;
+    
+           
     ALU2: alu_32bit
       port map(ian_op_sel => "101",
                ian_A      => s_PC_ALU_out,
-               ian_B      => 
+               ian_B      => s_jumpRegister_rslt,
+               oan_result => s_ALU2_rslt,
+               oan_overflow => s_ALU2_ovfl);
+               
+    with i_branchHelper_ctrl select
+      s_branchHelper_rslt <= s_PC_ALU_out when '0',
+                             s_ALU2_rslt when others;
+        
     
+    with i_jump_Ctrl select
+      s_jump_rslt <= s_branchHelper_rslt when '0',
+                     s_jump when others;
+                     
+    o_link_helper <= s_PC_ALU_out;                 
     
 end structure;
   
