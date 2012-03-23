@@ -8,29 +8,30 @@ use IEEE.numeric_std.ALL;
 -- John Ryan and Juan Mozqueda
 
 entity control is
-  port( instruction : in std_logic_vector(31 downto 0);
-        alu_op : out std_logic_vector(2 downto 0);
-        alu_src : out std_logic;
-        reg_write : out std_logic;
-        mem_write : out std_logic;
-        mem_to_reg : out std_logic;
-        mem_read : out std_logic;
-        branch : out std_logic;
-        branch_condition : out std_logic_vector(2 downto 0);
-        jump : out std_logic;
-        jump_reg_en : out std_logic;
-        reg_dst : out std_logic;
-        and_link : out std_logic;
-        store_type : out std_logic_vector(1 downto 0);
-        load_type : out std_logic_vector(1 downto 0);
-        load_sign_en : out std_logic;
-        alu_shift_mul_sel : out std_logic_vector(1 downto 0);
-        shift_source : out std_logic_vector(1 downto 0);
-        overflow_trap : out std_logic;
-        left_right_shift : out std_logic;
-        logic_arith_shift : out std_logic;
-        slt_unsigned : out std_logic
-    );
+  port( instruction         : in std_logic_vector(31 downto 0);
+        alu_op              : out std_logic_vector(2 downto 0);
+        alu_src             : out std_logic;
+        reg_write           : out std_logic;
+        mem_write           : out std_logic;
+        mem_to_reg          : out std_logic;
+        mem_read            : out std_logic;
+        branch              : out std_logic;
+        br_const_en         : out std_logic; -- new -- 
+        br_const            : out std_logic; -- new --
+        br_zero_should_be   : out std_logic; -- new --
+        jump                : out std_logic;
+        jump_reg_en         : out std_logic;
+        reg_dst             : out std_logic;
+        and_link            : out std_logic;
+        store_type          : out std_logic_vector(1 downto 0);
+        load_type           : out std_logic_vector(1 downto 0);
+        load_sign_en        : out std_logic;
+        alu_shift_mul_sel   : out std_logic_vector(1 downto 0);
+        shift_source        : out std_logic_vector(1 downto 0);
+        overflow_trap       : out std_logic;
+        left_right_shift    : out std_logic;
+        logic_arith_shift   : out std_logic;
+        slt_unsigned        : out std_logic );
 end control;
 
 architecture structure of control is
@@ -56,7 +57,9 @@ begin
   mem_to_reg <= sHelper(22);
   mem_read <= sHelper(21);
   branch <= sHelper(20);
-  branch_condition <= sHelper(19 downto 17);
+  br_const_en <= sHelper(19); -- new --
+  br_const <= sHelper(18); -- new --
+  br_zero_should_be <= sHelper(17); -- new --
   jump <= sHelper(16);
   jump_reg_en <= sHelper(15);
   reg_dst <= sHelper(14);
@@ -71,7 +74,7 @@ begin
   logic_arith_shift <= sHelper(1);
   slt_unsigned <= sHelper(0);
   
-
+    -- the following statements aren't correct right now --
   sHelper <= "1010100-0---0010-----00--0--0" when opcode = "000000" AND funct_code="100000" else
              "1011100-0---0000-----00--0--0" when opcode = "001000" else
              "00000000000000000000000000000";

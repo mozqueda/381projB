@@ -8,12 +8,12 @@ use IEEE.numeric_std.ALL;
 -- By Juan Mozqueda and John Ryan
 
 entity alu_32bit is
-  port(
-      ian_op_sel : in std_logic_vector(2 downto 0);
-      ian_A : in std_logic_vector(31 downto 0);
-      ian_B : in std_logic_vector(31 downto 0);
-      oan_result : out std_logic_vector(31 downto 0);
-      oan_overflow : out std_logic );
+  port( ian_op_sel    : in std_logic_vector(2 downto 0);
+        ian_A         : in std_logic_vector(31 downto 0);
+        ian_B         : in std_logic_vector(31 downto 0);
+        oan_result    : out std_logic_vector(31 downto 0);
+        oan_overflow  : out std_logic;
+        oan_zero      : out std_logic );
 end alu_32bit;
 
 architecture structure of alu_32bit is
@@ -59,9 +59,14 @@ signal sCin : std_logic;
 -- Structure --
 ---------------
 begin
-
+  
   oan_overflow <= sCARRY(30) XOR sCARRY(31);
   
+  -- set zero output
+  with oan_result select
+    zero <= '1' when x"00000000",
+            '0' when others;
+
   -- set sCin when subtracting (adding one)
   with ian_op_sel select
     sCin <= '1' when "110" ,-- for subtraction
