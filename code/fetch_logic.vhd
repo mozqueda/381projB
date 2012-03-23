@@ -8,14 +8,11 @@ use IEEE.std_logic_1164.all;
 
 
 entity fetch_logic is
-  port(i_imm                : in std_logic_vector(31 downto 0);
-       i_rs_data            : in std_logic_vector(31 downto 0);
-       i_jumpRegister_ctrl  : in std_logic;
-       i_branchHelper_ctrl  : in std_logic;
-       i_jump_ctrl          : in std_logic;
+  port(i_CLK                : in std_logic;
        i_reset              : in std_logic;
-       i_CLK                : in std_logic;
-       o_link_helper        : out std_logic_vector(31 downto 0));
+       i_jump_rslt          : in std_logic_vector(31 downto 0);
+       o_PC_ALU_rslt        : out std_logic_vector(31 downto 0);
+       o_instruction        : out std_logic_vector(31 downto 0));
 end fetch_logic;
 
 architecture structure of fetch_logic is
@@ -36,22 +33,7 @@ architecture structure of fetch_logic is
             ian_B         : in std_logic_vector(31 downto 0);
             oan_result    : out std_logic_vector(31 downto 0);
             oan_overflow  : out std_logic );
-  end component;
-  
-  component mux_nbit
-      port (imux_SW : in std_logic;
-            imux_A  : in std_logic_vector(31 downto 0);
-            imux_B  : in std_logic_vector(31 downto 0);
-            omux_E  : out std_logic_vector(31 downto 0));
-  end component;          
-  
-  component barrel_shifter
-      port(i_input        : in std_logic_vector(31 downto 0);
-           i_shiftAmount  : in std_logic_vector(4 downto 0);
-           i_control_L_R  : in std_logic;
-           i_logical_arth : in std_logic;
-           o_F            : out std_logic_vector(31 downto 0));
-  end component;         
+  end component;            
   
   component mem
       generic(depth_exp_of_2 	: integer;
@@ -65,12 +47,9 @@ architecture structure of fetch_logic is
   end component;
   
   -- Declare Signals --
-  
-  signal s_PC_out, s_instruction, s_PC_ALU_out, s_jump, s_imm_shift, s_jumpRegister_rslt, s_jump_rslt :  std_logic_vector(31 downto 0);
-  signal s_ALU2_rslt, s_branchHelper_rslt : std_logic_vector(31 downto 0);
-  signal s_PC_ALU_ovfl, s_ALU2_ovfl : std_logic;
- 
-  
+    
+  signal s_PC_out :  std_logic_vector(31 downto 0);
+  signal s_PC_ALU_ovfl : std_logic;
   
   -- End of signal declaration --
     
@@ -79,14 +58,14 @@ architecture structure of fetch_logic is
       port map(ireg_CLK =>  i_CLK,
                ireg_RST =>  i_reset,
                ireg_WE  =>  '1',
-               ireg_D   =>  s_jump,
+               ireg_D   =>  i_jump_rslt,
                oreg_Q   =>  s_PC_out);
                
     PC_ALU: alu_32bit
       port map(ian_op_sel => "101",
                ian_A      => s_PC_out,
                ian_B      => x"00000100",
-               oan_result => s_PC_ALU_out,          
+               oan_result => o_PC_ALU_rslt,          
                oan_overflow => s_PC_ALU_ovfl);
                
     inst_mem: mem
@@ -97,42 +76,8 @@ architecture structure of fetch_logic is
              clock   => '0',
              data    => x"00000000",
              wren    => '0',
-             q       => s_instruction);               
-    
-    s_jump <= s_PC_ALU_out(31 downto 28) & s_instruction(25 downto 0) & "00"; 
-    
-    
-    immshifter: barrel_shifter
-      port map(i_input        => i_imm,
-               i_shiftAmount  => "00010",
-               i_control_L_R  => '1',
-               i_logical_arth => '0',
-               o_F            => s_imm_shift);
-               
-    
-    with i_jumpRegister_ctrl select
-      s_jumpRegister_rslt <= s_imm_shift when '0',
-                             i_rs_data when others;
-    
-           
-    ALU2: alu_32bit
-      port map(ian_op_sel => "101",
-               ian_A      => s_PC_ALU_out,
-               ian_B      => s_jumpRegister_rslt,
-               oan_result => s_ALU2_rslt,
-               oan_overflow => s_ALU2_ovfl);
-               
-    with i_branchHelper_ctrl select
-      s_branchHelper_rslt <= s_PC_ALU_out when '0',
-                             s_ALU2_rslt when others;
-        
-    
-    with i_jump_Ctrl select
-      s_jump_rslt <= s_branchHelper_rslt when '0',
-                     s_jump when others;
-                     
-    o_link_helper <= s_PC_ALU_out;                 
-    
+             q       => o_instruction);               
+       
 end structure;
   
     
