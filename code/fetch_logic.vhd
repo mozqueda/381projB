@@ -25,7 +25,16 @@ architecture structure of fetch_logic is
             ireg_D       : in std_logic_vector(31 downto 0);
             oreg_Q       : out std_logic_vector(31 downto 0));
   end component;
+
   
+  component store_helper
+      port(byte_addr    : in std_logic_vector(31 downto 0);
+           wdata_in     : in std_logic_vector(31 downto 0);
+           store_type   : in std_logic_vector(1 downto 0);
+           word_address : out std_logic_vector(9 downto 0);
+           byteena      : out std_logic_vector(3 downto 0);
+           wdata        : out std_logic_vector(31 downto 0));      
+  end component;
   
   component alu_32bit  
       port (ian_op_sel    : in std_logic_vector(2 downto 0);
@@ -48,8 +57,10 @@ architecture structure of fetch_logic is
   
   -- Declare Signals --
     
-  signal s_PC_out :  std_logic_vector(31 downto 0);
-  signal s_PC_ALU_ovfl : std_logic;
+  signal s_PC_out, s_wData  :  std_logic_vector(31 downto 0);
+  signal s_PC_ALU_ovfl      : std_logic;
+  signal s_byteena            : std_logic_vector(3 downto 0);
+  signal s_address          : std_logic_vector(9 downto 0);
   
   -- End of signal declaration --
     
@@ -64,17 +75,25 @@ architecture structure of fetch_logic is
     PC_ALU: alu_32bit
       port map(ian_op_sel => "101",
                ian_A      => s_PC_out,
-               ian_B      => x"00000100",
+               ian_B      => x"00000004",
                oan_result => o_PC_ALU_rslt,          
                oan_overflow => s_PC_ALU_ovfl);
                
+    dstore: store_helper
+      port map(byte_addr => s_PC_out,
+               wdata_in  => x"00000000",
+               store_type => "10",
+               word_address => s_address,
+               byteena  => s_byteena,
+               wdata => s_wData);
+    
     inst_mem: mem
     generic map(depth_exp_of_2 => 10,
               mif_filename => "imem.mif")  
-    port map(address => s_PC_out,
-             byteena => x"F",
+    port map(address => s_address,
+             byteena => s_byteena,
              clock   => '0',
-             data    => x"00000000",
+             data    => s_wData,
              wren    => '0',
              q       => o_instruction);               
        
