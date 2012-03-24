@@ -55,6 +55,7 @@ architecture structure of alu_32bit is
 signal sCARRY : std_logic_vector(32 downto 0);
 signal sSet : std_logic; -- for slt operation
 signal sCin : std_logic;
+signal s_result : std_logic_vector(31 downto 0);
 ---------------
 -- Structure --
 ---------------
@@ -62,9 +63,11 @@ begin
   
   oan_overflow <= sCARRY(30) XOR sCARRY(31);
   
+  oan_result <= s_result;
+  
   -- set zero output
-  with oan_result select
-    zero <= '1' when x"00000000",
+  with s_result select
+    oan_zero <= '1' when x"00000000",
             '0' when others;
 
   -- set sCin when subtracting (adding one)
@@ -82,7 +85,7 @@ begin
         ia1_B => ian_B(0),
         ia1_cin => sCin,
         ia1_less => sSet,
-        oa1_result => oan_result(0),
+        oa1_result => s_result(0),
         oa1_cout => sCARRY(0) );
         
   -- Middle 1-bit ALUs --
@@ -94,7 +97,7 @@ begin
         ia1_B => ian_B(i),
         ia1_cin => sCARRY(i-1),
         ia1_less => '0',
-        oa1_result => oan_result(i),
+        oa1_result => s_result(i),
         oa1_cout => sCARRY(i) );
   end generate;
   
@@ -106,7 +109,7 @@ begin
       ia1_B => ian_B(31),
       ia1_cin => sCARRY(30),
       ia1_less => '0',
-      oa1_result => oan_result(31),
+      oa1_result => s_result(31),
       oa1_cout => sCARRY(31),
       oa1_set => sSet );
       
