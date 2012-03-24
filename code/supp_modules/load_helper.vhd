@@ -5,7 +5,7 @@ use IEEE.numeric_std.ALL;
 entity load_helper is
   port(
       load_type : in std_logic_vector(1 downto 0);
-      is_signed : std_logic;
+      is_signed : in std_logic;
       alu_out   : in std_logic_vector(31 downto 0);
       mem_out   : in std_logic_vector(31 downto 0);
       o_load_out   : out std_logic_vector(31 downto 0)
