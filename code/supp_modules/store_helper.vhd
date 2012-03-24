@@ -21,8 +21,10 @@ signal sword_addr     : std_logic_vector(9 downto 0);
 signal sdata1       : std_logic_vector(31 downto 0);
 
 begin
+  word_address <= byte_addr(11 downto 2);
   sbyte_index <= byte_addr(1 downto 0);
   sdata1 <= x"000000"& wdata_in(7 downto 0);
+  
   with(store_type & sbyte_index) select
     byteena <= "0001" when "0000",
                "0010" when "0001",
