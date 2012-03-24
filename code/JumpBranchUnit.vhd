@@ -15,14 +15,13 @@ end JumpBranchUnit;
 
 architecture structure of JumpBranchUnit is
 
-
-
   component alu_32bit  
       port (ian_op_sel    : in std_logic_vector(2 downto 0);
             ian_A         : in std_logic_vector(31 downto 0);
             ian_B         : in std_logic_vector(31 downto 0);
             oan_result    : out std_logic_vector(31 downto 0);
-            oan_overflow  : out std_logic );
+            oan_overflow  : out std_logic;
+            oan_zero      : out std_logic);
   end component;       
   
   component barrel_shifter
@@ -35,7 +34,7 @@ architecture structure of JumpBranchUnit is
   
   signal s_jump, s_imm_shift, s_jumpRegister_rslt :  std_logic_vector(31 downto 0);
   signal s_ALU2_rslt, s_branchHelper_rslt : std_logic_vector(31 downto 0);
-  signal s_ALU2_ovfl : std_logic;
+  signal s_ALU2_ovfl, s_AlU2_zero : std_logic;
  
   
   begin
@@ -46,7 +45,7 @@ architecture structure of JumpBranchUnit is
     immshifter: barrel_shifter
       port map(i_input        => i_imm,
                i_shiftAmount  => "00010",
-               i_control_L_R  => '1',
+               i_control_L_R  => '0',
                i_logical_arth => '0',
                o_F            => s_imm_shift);
                
@@ -61,7 +60,8 @@ architecture structure of JumpBranchUnit is
                ian_A      => i_PC_ALU,
                ian_B      => s_jumpRegister_rslt,
                oan_result => s_ALU2_rslt,
-               oan_overflow => s_ALU2_ovfl);
+               oan_overflow => s_ALU2_ovfl,
+               oan_zero     => s_ALU2_zero);
                
     with i_branchHelper_ctrl select
       s_branchHelper_rslt <= i_PC_ALU when '0',
