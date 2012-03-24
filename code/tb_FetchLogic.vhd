@@ -30,18 +30,57 @@ architecture behavior of tb_FetchLogic is
     
     process begin
       
-      t_CLK <= '0';
-      t_reset <= '1';
-      t_jump_rslt <= x"FFFFFFFF";
-      wait for 100 ns;
+      ---Initial Reset --------
       
       t_CLK <= '0';
       t_reset <= '1';
-      t_jump_rslt <= x"FFFFFFFF";
+      t_jump_rslt <= x"00000000";
+      wait for 100 ns;
+      
+      t_CLK <= '0';
+      t_reset <= '0';
+      t_jump_rslt <= x"00000000";
       wait for 100 ns;
             
+      -------------------------      
+            
+      t_CLK <= '0';
+      t_jump_rslt <= x"00000000";
+      wait for 100 ns;
+        
+      t_CLK <= '1';
+      t_jump_rslt <= x"00000000";
+      wait for 100 ns;      
       
+      --------------------------
       
+      t_CLK <= '0'; 
+      t_jump_rslt <= x"00000004";
+      wait for 100 ns;
+        
+      t_CLK <= '1';
+      t_jump_rslt <= x"00000004";
+      wait for 100 ns;     
+      
+      --------------------------
+      
+      t_CLK <= '0';
+      t_jump_rslt <= x"00000008";
+      wait for 100 ns;
+        
+      t_CLK <= '1';
+      t_jump_rslt <= x"00000008";
+      wait for 100 ns;   
+      
+      --------------------------
+      
+      t_CLK <= '0';
+      t_jump_rslt <= x"0000000c";
+      wait for 100 ns;
+        
+      t_CLK <= '1';
+      t_jump_rslt <= x"0000000c";
+      wait for 100 ns;
     
     end process; 
 end behavior;
