@@ -258,6 +258,12 @@ begin
               o_jump_rslt          => s_next_pc
               );
               
+  extender: ext_16_32
+    port MAP( sign_en   => '1',
+              i_16bit   => s_instruction(15 downto 0),
+              o_32bit   => s_imm_sign_extended);
+          
+  
   link_help_component: link_helper
     port MAP( wdata_out => s_link_helper_wdata,
               waddr_out => s_link_helper_waddr,
