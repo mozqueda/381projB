@@ -70,7 +70,7 @@ architecture structure of processor is
           rfo_rdata2 : out std_logic_vector(31 downto 0) );
   end component; -- reg_file_32
   
-  component alu_32_bit
+  component alu_32bit
     port( ian_op_sel    : in std_logic_vector(2 downto 0);
           ian_A         : in std_logic_vector(31 downto 0);
           ian_B         : in std_logic_vector(31 downto 0);
@@ -277,7 +277,7 @@ begin
                 rfo_rdata1  => s_reg_data1,
                 rfo_rdata2  => s_reg_data2
                 );
-  alu: alu_32_bit
+  alu: alu_32bit
     port MAP (  ian_op_sel    => s_alu_op,
                 ian_A         => s_reg_data1,
                 ian_B         => s_alu_input_b,
