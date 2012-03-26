@@ -50,6 +50,13 @@ begin
   opcode <= instruction(31 downto 26);
   funct_code <= instruction(5 downto 0);
   
+    -- the following statements aren't correct right now --
+  sHelper <= "1010100-0---0010-----00--0--0" when opcode = "000000" AND funct_code = "100000" else
+             "1011100-0---0000-----00--0--0" when opcode = "001000" else
+             "1011100-00--0010-----00--1--0" when opcode = "001001" else
+             "1011100-00--0000-----00--1--0' when opcode = "000000" AND funct_code = "100001" else
+             "00000000000000000000000000000";
+
   alu_op <= sHelper(28 downto 26);
   alu_src <= sHelper(25);
   reg_write <= sHelper(24);
