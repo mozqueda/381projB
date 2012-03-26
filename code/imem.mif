@@ -20,7 +20,7 @@ DATA_RADIX = HEX; 	% Enter BIN, DEC, HEX, OCT, or UNS; unless
 CONTENT
 BEGIN
 
-0: 00100100000010000000000000000100 % addiu
+0: 24080004; %addiu
 
 [10..48] : ffFFffFF; 			
 
