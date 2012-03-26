@@ -10,7 +10,7 @@ architecture behavior of tb_processor is
   constant cCLK_PER : time := gCLK_HPER * 2;
   component processor
     port(p_CLK : in std_logic;
-         reset : in std_logic);
+         p_reset : in std_logic);
   end component;       
 
   signal s_clk      : std_logic;
@@ -18,7 +18,7 @@ architecture behavior of tb_processor is
   begin
       DUT: processor
       port map(p_CLK => s_clk,
-               reset => '0');
+               p_reset => '0');
 
              
                       
@@ -37,7 +37,7 @@ architecture behavior of tb_processor is
   
   processor_tb: process
     begin
-    
+    wait for cCLK_PER;
   end process;
 
 
