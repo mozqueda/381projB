@@ -257,6 +257,10 @@ begin
               i_jump_ctrl          => s_jump,
               o_jump_rslt          => s_next_pc
               );
+  
+  s_rs <= s_instruction(25 downto 21);
+  s_rt <= s_instruction(20 downto 16);
+  s_rd <= s_instruction(15 downto 11);
               
   extender: ext_16_32
     port MAP( sign_en   => '1',
