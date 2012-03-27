@@ -136,6 +136,13 @@ architecture structure of processor is
           and_link : in std_logic );
   end component;
   
+  component branch_helper
+    port (  out_branch : out std_logic;
+            in_branch : in std_logic;
+            zero_should_be : in std_logic;
+            zero : in std_logic ) ;
+  end component;
+  
 -- ===========
 -- = Signals =
 -- ===========
@@ -157,7 +164,7 @@ signal s_reg_data1          : std_logic_vector(31 downto 0);
 signal s_reg_data2          : std_logic_vector(31 downto 0);
 signal s_reg_data2_or_branch_const  : std_logic_vector(31 downto 0);
 signal s_imm_sign_extended  : std_logic_vector(31 downto 0);
-signal s_imm                : std_logic_vector(31 downto 0);
+signal s_imm                : std_logic_vector(15 downto 0);
 signal s_alu_input_b        : std_logic_vector(31 downto 0);
 
 -- parallel to the ALU
@@ -239,7 +246,7 @@ begin
               slt_unsigned      => s_slt_unsigned
               );
               
-  fetch_log: fetch_logic
+  fetch_logic_unit: fetch_logic
     port MAP( i_CLK          =>p_clk,
               i_reset        => p_reset,
               i_jump_rslt    => s_next_pc,
@@ -264,7 +271,7 @@ begin
               
   extender: ext_16_32
     port MAP( sign_en   => '1',
-              i_16bit   => s_instruction(15 downto 0),
+              i_16bit   => s_imm,
               o_32bit   => s_imm_sign_extended);
           
   
@@ -330,9 +337,14 @@ begin
               clock   => p_clk,
               data    => s_mem_wdata,
               wren    => s_mem_write,
-              q       => s_mem_out
-      );
+              q       => s_mem_out );
       
+  branch_helper_unit : branch_helper
+    port MAP( out_branch      => s_branch_help_result,
+              in_branch       => s_branch,
+              zero_should_be  => s_br_zero_should_be,
+              zero            => s_alu_zero );
+    
   ------------------------------
   ----- With/Select Muxes ------
   ------------------------------
@@ -369,5 +381,11 @@ begin
     s_alu_input_b <= s_reg_data2_or_branch_const when '0',
                      s_imm_sign_extended when '1',
                       x"00000000" when others;
+  
+  -----------------------
+  -- Other Assignments --
+  -----------------------
+  s_imm <= s_instruction(15 downto 0);
+  s_shamt <= s_instruction(10 downto 6);
   
 end architecture ; -- structure
