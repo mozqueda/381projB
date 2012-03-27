@@ -1,0 +1,10 @@
+# compiled source #
+###################
+code/work/
+code/transcript
+code/vsim.wlf
+
+# backups #
+###########
+*.bak
+
